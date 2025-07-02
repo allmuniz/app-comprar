@@ -53,10 +53,28 @@ export function Home(){
     try {
       await itemsStorage.remove(id)
       await itemsByStatus()
-      
+
     } catch (error) {
       console.log(error)
       Alert.alert("Remover", "Não foi possivel remover o item")
+    }
+  }
+
+  function handleClear() {
+    Alert.alert("Limpar", "Deseja remover todos?", [
+      {text: "Não", style: "cancel"},
+      {text:"Sim", onPress: () => onClear()}
+    ])
+  }
+
+  async function onClear() {
+    try {
+      await itemsStorage.clear();
+      setItems([])
+
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Remover", "Não foi possivel remover os itens");
     }
   }
 
@@ -94,7 +112,7 @@ export function Home(){
             ))
           }
 
-          <TouchableOpacity style={styles.clearButton}>
+          <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
             <Text style={styles.clearText}>Limpar</Text>
           </TouchableOpacity>
 
