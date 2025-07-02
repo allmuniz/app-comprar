@@ -3,6 +3,7 @@ import { View, Image, TouchableOpacity, Text } from "react-native";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Filter } from "@/components/Filter";
+import { Item } from "@/components/Item";
 
 import { styles } from "./styles";
 import { FilterStatus } from "@/types/FilterStatus";
@@ -33,6 +34,12 @@ export function Home(){
           </TouchableOpacity>
 
         </View>
+
+        <Item 
+          data={{ status: FilterStatus.DONE, description: "Café" }} 
+          onRemove={ () => console.log("Remover") } 
+          onStatus={ () => console.log("Alterar o status") }
+        />
         
       </View>
     </View>
