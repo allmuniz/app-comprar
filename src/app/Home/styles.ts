@@ -26,5 +26,21 @@ export const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     padding: 24,
     marginTop: 24,
+  },
+  header:{
+    width:"100%",
+    flexDirection: "row",
+    gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E4E6EC",
+    paddingBottom: 12,
+  },
+  clearButton:{
+    marginLeft: "auto",
+  },
+  clearText:{
+    fontSize: 12,
+    color: "#828282",
+    fontWeight: 600
   }
 })
