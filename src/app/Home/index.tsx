@@ -1,5 +1,5 @@
-import { View, Image, TouchableOpacity, Text, FlatList } from "react-native";
-import { useState } from "react";
+import { View, Image, TouchableOpacity, Text, FlatList, Alert } from "react-native";
+import { useState, useEffect } from "react";
 
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
@@ -8,37 +8,60 @@ import { Item } from "@/components/Item";
 
 import { styles } from "./styles";
 import { FilterStatus } from "@/types/FilterStatus";
+import { itemsStorage, ItemStorage } from "@/storage/itemsStorage";
 
 const FILTER_STATUS: FilterStatus[] = [FilterStatus.PENDING, FilterStatus.DONE];
-const ITEMS = [
-  {
-    id: "1",
-    status: FilterStatus.DONE,
-    description: "Café"
-  },
-  {
-    id: "2",
-    status: FilterStatus.PENDING,
-    description: "Macarrão"
-  },
-  {
-    id: "3",
-    status: FilterStatus.PENDING,
-    description: "Cebola"
-  }
-]
+
 
 export function Home(){
 
   const [filter, setFilter] = useState(FilterStatus.PENDING)
+  const [description, setDescription] = useState("")
+  const [items, setItems] = useState<ItemStorage[]>([])
+
+  async function handleAdd(){
+    if (!description.trim()) {
+      return Alert.alert("Adicionar", "Informe a descrição para adicionar.")
+    }
+
+    const newItem = {
+      id: Math.random().toString(36).substring(2),
+      description,
+      status:FilterStatus.PENDING
+    }
+
+    await itemsStorage.add(newItem);
+    await getItems()
+  }
+
+  async function getItems() {
+    try {
+      const response = await itemsStorage.get();
+      setItems(response);
+
+    } catch (error) {
+      console.log(error)
+      Alert.alert("Error", "Não foi possivel buscar os itens")
+    }
+  }
+
+  useEffect(() => {
+    getItems()
+  }, [])
 
   return(
     <View style={styles.container}>
       <Image source={require("@/assets/logo.png")} style={styles.logo}/>
 
       <View style={styles.form}>
-        <Input placeholder="O que você precisa comprar"/>
-        <Button title="Adicionar"/>
+        <Input 
+          placeholder="O que você precisa comprar"
+          onChangeText={setDescription}
+        />
+        <Button 
+          title="Adicionar"
+          onPress={handleAdd}
+        />
       </View>
 
       <View style={styles.content}>
@@ -62,7 +85,7 @@ export function Home(){
         </View>
 
         <FlatList
-          data={ITEMS}
+          data={items}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => <View style={styles.separator}/>}
@@ -73,7 +96,7 @@ export function Home(){
           renderItem={({item}) => (
             <Item 
               data={item} 
-              onRemove={ () => console.log("Remover " + item.description) } 
+              onRemove={ () => console.log("Remover "  + item.description)} 
               onStatus={ () => console.log("Alterar o status do " + item.description) }
             />
           )}
